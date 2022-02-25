@@ -1,0 +1,6 @@
+{ 
+    "bam_chrom_counter.num_chrom": 3,
+    "bam_chrom_counter.bam": "HG00109.chrom20.ILLUMINA.bwa.GBR.exome.20121211.bam",
+    "bam_chrom_counter.bai": "HG00109.chrom20.ILLUMINA.bwa.GBR.exome.20121211.bam.bai"
+    
+}

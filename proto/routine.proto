@@ -1,0 +1,28 @@
+syntax = "proto3";
+package routines;
+
+message Job {
+    string wdl = 1;
+    string input = 2;
+    string data_dir = 3;
+}
+
+message Result {
+    Status status = 1;
+    string outdir = 2;
+}
+
+message Status {
+  StatusCode code = 1;
+  enum StatusCode {
+    OK = 0;
+    ERROR = 1;
+  }
+  string msg = 2;
+}
+
+service Routine {
+
+    rpc Execute(Job) returns(Result) {} 
+
+}
