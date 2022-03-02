@@ -50,7 +50,7 @@ def main():
     
     wdl = os.path.abspath(args.wdl)
     input_json = os.path.abspath(args.input_json)
-    result = api.submit(wdl, input_json)   
+    result = api.submit(wdl, input_json, args.data_dir)   
 
     #logging.info(f"job completed: {result}")
     print(f"job completed: {result}")

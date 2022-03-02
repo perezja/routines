@@ -6,6 +6,7 @@ import pickle
 import json
 import logging
 import asyncio 
+from pathlib import Path
 
 from WDL import values_to_json 
 from WDL.Value import digest_env
@@ -55,8 +56,9 @@ class WorkflowController(routine_pb2_grpc.RoutineServicer):
         if not os.path.exists(cfg.app_dir):
             os.makedirs(cfg.app_dir)
         
-        cache_dir = os.path.join(cfg.app_dir, 'cache')
-        self.run_dir = os.path.join(cfg.app_dir, 'runs')
+        self.run_dir = os.path.join(cfg.app_dir, 'run')
+        self.data_dir = os.path.join(cfg.app_dir, 'data')
+        cache_dir = os.path.join(self.run_dir, 'cache')
 
         self.cache = StateCache(cache_dir)
         self.async_loop = async_loop
@@ -66,7 +68,7 @@ class WorkflowController(routine_pb2_grpc.RoutineServicer):
         print("{}: received job {}".format(self.__class__.__name__, job))
 
         doc = load_wdl(self.async_loop, job.wdl)
-        input_env = load_input(self.async_loop, doc, job.input)
+        input_env = load_input(self.async_loop, doc, job.input, self.data_dir)
         sm = StateMachine(doc, input_env, self.run_dir) 
 
         out=str(values_to_json(input_env).items())
@@ -77,6 +79,10 @@ class WorkflowController(routine_pb2_grpc.RoutineServicer):
     def Execute(self, job, context):
 
         logging.info("{}: received job {}".format(self.__class__.__name__, job))
+        # TODO: assert job.data_dir if defined is subpath of self.data_dir
+        if job.data_dir:
+            logging.info(f"checking if data {job.data_dir} in mounted path {self.data_dir}")
+            assert Path(self.data_dir) in Path(job.data_dir).parents
 
         doc = load_wdl(self.async_loop, job.wdl)
         input_env = load_input(self.async_loop, doc, job.input, job.data_dir)
@@ -126,6 +132,4 @@ if __name__ == "__main__":
 
     loop = asyncio.get_event_loop()
     run(loop, cfg)
-
-
 

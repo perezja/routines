@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: routines-api 
+spec:
+  containers:
+  - name: routines-api 
+    image: apollodorus/routines-api:v1 
+    ports:
+    - containerPort: 80
