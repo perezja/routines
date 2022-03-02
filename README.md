@@ -21,17 +21,21 @@ sudo usermod -aG docker $USER && newgrp docker
 
 ## docker
 
-Build application components 
+### Build application components
 
-  - controller
+The base image defines all requirements for the components. This `Dockerfile` is in the main project directory.
 
-```
-cd components/controller && sudo docker build . --tag apollodorus/routines-controller:v1
-```
-
-  - local-cluster 
+  - base image
 
 ```
+sudo docker build . --tag apollodorus/routines-controller:v1
+```
+
+The following images provide entrypoints for the application components.
+
+```
+cd deployments/client && sudo docker build . --tag apollodorus/routines-api:v1
+cd deployments/controller && sudo docker build . --tag apollodorus/routines-controller:v1
 cd deployments/local-cluster && sudo docker build . --tag apollodorus/routines-local-cluster:v1
 ```
 
@@ -53,13 +57,11 @@ sudo docker run -d --name rabbitmq --rm -p 5672:5672 rabbitmq:3.8-alpine
 
 ```
 ./docker/launch_controller.sh
-`
+```
 
+## Kubernetes
 
-
-## application
-
-1. Start services
+1.Start AMQP server 
 
  - RabbitMQ 
 
@@ -67,6 +69,11 @@ sudo docker run -d --name rabbitmq --rm -p 5672:5672 rabbitmq:3.8-alpine
 kubectl create -f deployments/rabbitmq/rabbitmq-service.yaml
 ```
 
+2. Run deployment
+
+```
+kubectl apply -f ./deployments/deployment.yaml
+```
 
 
 
